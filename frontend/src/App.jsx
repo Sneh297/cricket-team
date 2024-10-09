@@ -6,6 +6,7 @@ import {
   removePlayer,
   addNewTeam,
   setCurrentTeam,
+  deleteTeam,
 } from '../src/store/cricketSlice';
 
 export default function Players() {
@@ -35,6 +36,12 @@ export default function Players() {
 
   const handleSetCurrentTeam = (index) => {
     dispatch(setCurrentTeam(index));
+  };
+
+  const handleDeleteTeam = (index) => {
+    if (window.confirm('Are you sure you want to delete this team?')) {
+      dispatch(deleteTeam(index));
+    }
   };
 
   const calculateTotalRuns = (team) => {
@@ -119,17 +126,24 @@ export default function Players() {
             {/* Team Selection */}
             <div className='mb-4 flex flex-wrap gap-2'>
               {teams.map((team, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSetCurrentTeam(index)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full ${
-                    currentTeam === index
-                      ? 'bg-violet-500 text-white'
-                      : 'bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  Team {index + 1}
-                </button>
+                <div key={index} className='flex items-center'>
+                  <button
+                    onClick={() => handleSetCurrentTeam(index)}
+                    className={`px-3 py-1 text-xs font-medium rounded-l-full ${
+                      currentTeam === index
+                        ? 'bg-violet-500 text-white'
+                        : 'bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    Team {index + 1}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTeam(index)}
+                    className='px-2 py-1 text-xs font-medium bg-red-500/20 text-red-300 rounded-r-full hover:bg-red-500/30'
+                  >
+                    X
+                  </button>
+                </div>
               ))}
               <button
                 onClick={handleAddNewTeam}
