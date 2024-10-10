@@ -39,11 +39,6 @@ const extractCricketStats = async () => {
         statsData,
       };
 
-      // fs.writeFileSync('cricket_stats.json', JSON.stringify(jsonData, null, 2));
-      console.log(
-        `Successfully extracted stats for ${statsData.length} players and saved to cricket_stats.json`
-      );
-
       return jsonData; // Return the data instead of logging it
     } else {
       throw new Error('No table rows were found in the HTML content');

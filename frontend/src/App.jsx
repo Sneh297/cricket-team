@@ -17,10 +17,8 @@ export default function Players() {
   const [view, setView] = useState('teams'); // 'teams' or 'players'
 
   useEffect(() => {
-    if (data.length === 0) {
-      dispatch(fetchCricketData());
-    }
-  }, [dispatch, data.length]);
+    dispatch(fetchCricketData());
+  }, [dispatch]);
 
   const handleAddPlayer = (player) => {
     dispatch(addPlayer(player));
@@ -125,26 +123,27 @@ export default function Players() {
           <>
             {/* Team Selection */}
             <div className='mb-4 flex flex-wrap gap-2'>
-              {teams.map((team, index) => (
-                <div key={index} className='flex items-center'>
-                  <button
-                    onClick={() => handleSetCurrentTeam(index)}
-                    className={`px-3 py-1 text-xs font-medium rounded-l-full ${
-                      currentTeam === index
-                        ? 'bg-violet-500 text-white'
-                        : 'bg-slate-800 text-slate-300'
-                    }`}
-                  >
-                    Team {index + 1}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTeam(index)}
-                    className='px-2 py-1 text-xs font-medium bg-red-500/20 text-red-300 rounded-r-full hover:bg-red-500/30'
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+              {Array.isArray(teams) &&
+                teams.map((team, index) => (
+                  <div key={index} className='flex items-center'>
+                    <button
+                      onClick={() => handleSetCurrentTeam(index)}
+                      className={`px-3 py-1 text-xs font-medium rounded-l-full ${
+                        currentTeam === index
+                          ? 'bg-violet-500 text-white'
+                          : 'bg-slate-800 text-slate-300'
+                      }`}
+                    >
+                      Team {index + 1}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTeam(index)}
+                      className='px-2 py-1 text-xs font-medium bg-red-500/20 text-red-300 rounded-r-full hover:bg-red-500/30'
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
               <button
                 onClick={handleAddNewTeam}
                 className='px-3 py-1 text-xs font-medium rounded-full bg-emerald-500 text-white'
@@ -159,45 +158,53 @@ export default function Players() {
                 <h2 className='text-lg font-semibold text-slate-200'>
                   Team {currentTeam + 1}{' '}
                   <span className='text-emerald-400'>
-                    ({teams[currentTeam]?.length || 0} players)
+                    (
+                    {Array.isArray(teams) && teams[currentTeam]
+                      ? teams[currentTeam].length
+                      : 0}{' '}
+                    players)
                   </span>
                 </h2>
               </div>
               <div className='p-4'>
-                {teams[currentTeam]?.map((player) => (
-                  <div
-                    key={player.player}
-                    className='bg-slate-800/40 rounded-lg p-3 mb-2 flex justify-between items-center'
-                  >
-                    <div>
-                      <h3 className='font-semibold text-slate-200'>
-                        {player.player}
+                {Array.isArray(teams) &&
+                  teams[currentTeam] &&
+                  teams[currentTeam].map((player) => (
+                    <div
+                      key={player.player}
+                      className='bg-slate-800/40 rounded-lg p-3 mb-2 flex justify-between items-center'
+                    >
+                      <div>
+                        <h3 className='font-semibold text-slate-200'>
+                          {player.player}
+                        </h3>
+                        <p className='text-sm text-slate-400'>
+                          Runs:{' '}
+                          <span className='text-emerald-400'>
+                            {player.runs === '-' ? 0 : player.runs}
+                          </span>
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRemovePlayer(player)}
+                        className='px-2 py-1 text-xs bg-red-500/20 text-red-300 rounded'
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                {Array.isArray(teams) &&
+                  teams[currentTeam] &&
+                  teams[currentTeam].length > 0 && (
+                    <div className='mt-4 p-3 bg-slate-800/40 rounded-lg'>
+                      <h3 className='text-md font-semibold text-slate-200 mb-1'>
+                        Team Statistics
                       </h3>
-                      <p className='text-sm text-slate-400'>
-                        Runs:{' '}
-                        <span className='text-emerald-400'>
-                          {player.runs === '-' ? 0 : player.runs}
-                        </span>
+                      <p className='text-emerald-400 font-medium'>
+                        Total Runs: {calculateTotalRuns(teams[currentTeam])}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleRemovePlayer(player)}
-                      className='px-2 py-1 text-xs bg-red-500/20 text-red-300 rounded'
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-                {teams[currentTeam]?.length > 0 && (
-                  <div className='mt-4 p-3 bg-slate-800/40 rounded-lg'>
-                    <h3 className='text-md font-semibold text-slate-200 mb-1'>
-                      Team Statistics
-                    </h3>
-                    <p className='text-emerald-400 font-medium'>
-                      Total Runs: {calculateTotalRuns(teams[currentTeam])}
-                    </p>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           </>
@@ -210,41 +217,47 @@ export default function Players() {
               </h2>
             </div>
             <div className='p-4'>
-              {data.map((player) => (
-                <div
-                  key={player.player}
-                  className='bg-slate-800/40 rounded-lg p-3 mb-2 flex justify-between items-center'
-                >
-                  <div>
-                    <h3 className='font-semibold text-slate-200'>
-                      {player.player}
-                    </h3>
-                    <p className='text-sm text-slate-400'>
-                      Runs:{' '}
-                      <span className='text-violet-400'>
-                        {player.runs === '-' ? 0 : player.runs}
-                      </span>
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleAddPlayer(player)}
-                    disabled={teams[currentTeam]?.some(
-                      (p) => p.player === player.player
-                    )}
-                    className={`px-2 py-1 text-xs rounded ${
-                      teams[currentTeam]?.some(
+              {Array.isArray(data.statsData) && data.statsData.length > 0 ? (
+                data.statsData.map((player) => (
+                  <div
+                    key={player.player}
+                    className='bg-slate-800/40 rounded-lg p-3 mb-2 flex justify-between items-center'
+                  >
+                    <div>
+                      <h3 className='font-semibold text-slate-200'>
+                        {player.player}
+                      </h3>
+                      <p className='text-sm text-slate-400'>
+                        Runs:{' '}
+                        <span className='text-violet-400'>
+                          {player.runs === '-' ? 0 : player.runs}
+                        </span>
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleAddPlayer(player)}
+                      disabled={teams[currentTeam]?.some(
+                        (p) => p.player === player.player
+                      )}
+                      className={`px-2 py-1 text-xs rounded ${
+                        teams[currentTeam]?.some(
+                          (p) => p.player === player.player
+                        )
+                          ? 'bg-slate-800/50 text-slate-500'
+                          : 'bg-violet-500/20 text-violet-300'
+                      }`}
+                    >
+                      {teams[currentTeam]?.some(
                         (p) => p.player === player.player
                       )
-                        ? 'bg-slate-800/50 text-slate-500'
-                        : 'bg-violet-500/20 text-violet-300'
-                    }`}
-                  >
-                    {teams[currentTeam]?.some((p) => p.player === player.player)
-                      ? 'Added'
-                      : 'Add'}
-                  </button>
-                </div>
-              ))}
+                        ? 'Added'
+                        : 'Add'}
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className='text-slate-400'>No player data available.</div>
+              )}
             </div>
           </div>
         )}

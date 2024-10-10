@@ -1,10 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Async thunk for fetching cricket data
 export const fetchCricketData = createAsyncThunk(
   'cricket/fetchCricketData',
   async () => {
-    const response = await fetch('https://api.example.com/cricket-data');
+    const response = await fetch('/api');
     if (!response.ok) {
       throw new Error('Failed to fetch cricket data');
     }
@@ -15,7 +14,7 @@ export const fetchCricketData = createAsyncThunk(
 const cricketSlice = createSlice({
   name: 'cricket',
   initialState: {
-    data: [],
+    data: { statsData: [] },
     teams: [[]],
     currentTeam: 0,
     loading: false,
